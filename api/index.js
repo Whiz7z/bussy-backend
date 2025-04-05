@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: true,
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true
 }));
 
@@ -37,7 +37,10 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    maxAge: 24 * 60 * 60 * 1000,
+    sameSite: 'none', 
+    secure: true,
+    
   },
 }));
 
