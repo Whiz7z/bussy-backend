@@ -2,13 +2,13 @@
   "name": "bussy-backend",
   "version": "1.0.0",
   "description": "Backend for Bussy application",
-  "main": "src/index.js",
+  "main": "api/index.js",
   "prisma": {
     "seed": "node prisma/seed.js"
   },
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
+    "start": "node api/index.js",
+    "dev": "nodemon api/index.js",
     "seed": "prisma db seed"
   },
   "dependencies": {
