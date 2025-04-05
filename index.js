@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const PgSession = require('connect-pg-simple')(session);
 const { Pool } = require('pg');
 require('dotenv').config();
-require('./config/passport');
+require('./src/config/passport');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -46,9 +46,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routes
-const authRoutes = require('./routes/auth');
-const businessRoutes = require('./routes/business');
-const reviewRoutes = require('./routes/review');
+const authRoutes = require('./src/routes/auth');
+const businessRoutes = require('./src/routes/business');
+const reviewRoutes = require('./src/routes/review');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/businesses', businessRoutes);
