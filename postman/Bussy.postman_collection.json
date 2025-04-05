@@ -1,0 +1,227 @@
+{
+  "info": {
+    "name": "Bussy API",
+    "description": "REST API for Bussy application with Google OAuth authentication",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Google Login",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/auth/google",
+              "host": ["{{BASE_URL}}"],
+              "path": ["auth", "google"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/auth/user",
+              "host": ["{{BASE_URL}}"],
+              "path": ["auth", "user"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/auth/logout",
+              "host": ["{{BASE_URL}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Businesses",
+      "item": [
+        {
+          "name": "Get All Businesses",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/businesses",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "businesses"]
+            }
+          }
+        },
+        {
+          "name": "Get Business by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/businesses/{{businessId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "businesses", "{{businessId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Business",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{BASE_URL}}/api/businesses",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "businesses"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"New Business Name\",\n    \"category\": \"Restaurant\",\n    \"formattedAddress\": \"123 Example Street, London\",\n    \"phoneNumber\": \"+44 20 1234 5678\",\n    \"website\": \"https://example.co.uk\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Business",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{BASE_URL}}/api/businesses/{{businessId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "businesses", "{{businessId}}"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Updated Business Name\",\n    \"category\": \"Restaurant\",\n    \"formattedAddress\": \"123 Example Street, London\",\n    \"phoneNumber\": \"+44 20 1234 5678\",\n    \"website\": \"https://example.co.uk\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Business",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{BASE_URL}}/api/businesses/{{businessId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "businesses", "{{businessId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Get Reviews by Business",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/reviews/business/{{businessId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "reviews", "business", "{{businessId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Review by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/reviews/{{reviewId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "reviews", "{{reviewId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Review",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{BASE_URL}}/api/reviews",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "reviews"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"rating\": 5,\n    \"comment\": \"Excellent service!\",\n    \"businessId\": {{businessId}}\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Review",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{BASE_URL}}/api/reviews/{{reviewId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "reviews", "{{reviewId}}"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"rating\": 4,\n    \"comment\": \"Updated review comment\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Review",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{BASE_URL}}/api/reviews/{{reviewId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "reviews", "{{reviewId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "value",
+        "value": "{{sessionId}}",
+        "type": "string"
+      },
+      {
+        "key": "key",
+        "value": "connect.sid",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "cookie",
+        "type": "string"
+      }
+    ]
+  }
+} 
