@@ -16,6 +16,7 @@
   "dependencies": {
     "@google-cloud/storage": "^7.16.0",
     "@prisma/client": "^5.10.0",
+    "cloudinary": "^2.6.0",
     "connect-pg-simple": "^10.0.0",
     "connect-sqlite3": "^0.9.15",
     "cookie-parser": "^1.4.6",

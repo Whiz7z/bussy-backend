@@ -9,7 +9,9 @@ require('dotenv').config();
 require('../src/config/passport');
 
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ storage: multer.memoryStorage() });
+
+const cloudinary = require('cloudinary').v2;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -69,23 +71,50 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 app.post('/api/upload-profile-picture', upload.single('image'), async (req, res) => {
-  const { userId } = req.body; // Get user ID from request
-  console.log(req.file);
-  const filePath = req.file.path; // Path to the uploaded file
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
 
-  // Upload the file to cloud storage and get the URL
-  const imageUrl = await uploadToCloudStorage(filePath); // Implement this function
+    // Upload to Cloudinary
+    const result = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: 'profile-pictures',
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
 
-  // Update the user's profile in the database
-  await prisma.user.update({
-    where: { id: userId },
-    data: { picture: imageUrl },
-  });
+      // Create a buffer from the file
+      const buffer = req.file.buffer;
+      const stream = require('stream');
+      const bufferStream = new stream.PassThrough();
+      bufferStream.end(buffer);
+      bufferStream.pipe(uploadStream);
+    });
 
-  res.json({ message: 'Profile picture updated successfully', imageUrl });
+    // Update user's picture URL in the database
+    await prisma.user.update({
+      where: { id: req.user.id },
+      data: { picture: result.secure_url }
+    });
+
+    res.json({ url: result.secure_url });
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({ error: 'Failed to upload image' });
+  }
 });
 
 app.listen(PORT, () => {
