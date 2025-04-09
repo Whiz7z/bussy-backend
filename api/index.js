@@ -8,6 +8,9 @@ const { Pool } = require('pg');
 require('dotenv').config();
 require('../src/config/passport');
 
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -55,6 +58,7 @@ app.use(passport.session());
 const authRoutes = require('../src/routes/auth');
 const businessRoutes = require('../src/routes/business');
 const reviewRoutes = require('../src/routes/review');
+const uploadToCloudStorage = require('../utils/uploadToCloudStorage');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/businesses', businessRoutes);
@@ -63,6 +67,25 @@ app.use('/api/reviews', reviewRoutes);
 // Health check route
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
+});
+
+
+
+app.post('/api/upload-profile-picture', upload.single('image'), async (req, res) => {
+  const { userId } = req.body; // Get user ID from request
+  console.log(req.file);
+  const filePath = req.file.path; // Path to the uploaded file
+
+  // Upload the file to cloud storage and get the URL
+  const imageUrl = await uploadToCloudStorage(filePath); // Implement this function
+
+  // Update the user's profile in the database
+  await prisma.user.update({
+    where: { id: userId },
+    data: { picture: imageUrl },
+  });
+
+  res.json({ message: 'Profile picture updated successfully', imageUrl });
 });
 
 app.listen(PORT, () => {

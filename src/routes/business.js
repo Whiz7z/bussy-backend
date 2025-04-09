@@ -4,6 +4,7 @@ const { isAuthenticated } = require('../middleware/auth');
 
 // Get all businesses
 router.get('/', async (req, res) => {
+  console.log(req);
   try {
     const businesses = await prisma.business.findMany({
       include: {
@@ -12,6 +13,7 @@ router.get('/', async (req, res) => {
     });
     res.json(businesses);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: 'Failed to fetch businesses' });
   }
 });
@@ -34,12 +36,14 @@ router.get('/:id', async (req, res) => {
     }
     res.json(business);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: 'Failed to fetch business' });
   }
 });
 
 // Create business
 router.post('/', isAuthenticated, async (req, res) => {
+  
   try {
     const { name, category, formattedAddress, phoneNumber, website } = req.body;
     const business = await prisma.business.create({
@@ -53,6 +57,7 @@ router.post('/', isAuthenticated, async (req, res) => {
     });
     res.status(201).json(business);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: 'Failed to create business' });
   }
 });
