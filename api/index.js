@@ -7,6 +7,9 @@ const PgSession = require('connect-pg-simple')(session);
 const { Pool } = require('pg');
 require('dotenv').config();
 require('../src/config/passport');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
 
 const multer = require('multer');
 const upload = multer({
@@ -121,7 +124,6 @@ app.post('/api/upload-profile-picture', async (req, res) => {
       });
 
       // Update user's picture URL in the database
-      const { prisma } = require('../src/config/prisma');
       await prisma.user.update({
         where: { id: req.user.id },
         data: { picture: result.secure_url }
