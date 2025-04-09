@@ -9,7 +9,12 @@ require('dotenv').config();
 require('../src/config/passport');
 
 const multer = require('multer');
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  }
+}).single('image');
 
 const cloudinary = require('cloudinary').v2;
 
@@ -78,43 +83,56 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-app.post('/api/upload-profile-picture', upload.single('image'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+app.post('/api/upload-profile-picture', async (req, res) => {
+  upload(req, res, async function(err) {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ error: err.message });
+    } else if (err) {
+      return res.status(500).json({ error: 'Something went wrong' });
     }
 
-    // Upload to Cloudinary
-    const result = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: 'profile-pictures',
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
 
-      // Create a buffer from the file
-      const buffer = req.file.buffer;
-      const stream = require('stream');
-      const bufferStream = new stream.PassThrough();
-      bufferStream.end(buffer);
-      bufferStream.pipe(uploadStream);
-    });
+      if (!req.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
 
-    // Update user's picture URL in the database
-    await prisma.user.update({
-      where: { id: req.user.id },
-      data: { picture: result.secure_url }
-    });
+      // Upload to Cloudinary
+      const result = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: 'profile-pictures',
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
 
-    res.json({ url: result.secure_url });
-  } catch (error) {
-    console.error('Upload error:', error);
-    res.status(500).json({ error: 'Failed to upload image' });
-  }
+        // Create a buffer from the file
+        const buffer = req.file.buffer;
+        const stream = require('stream');
+        const bufferStream = new stream.PassThrough();
+        bufferStream.end(buffer);
+        bufferStream.pipe(uploadStream);
+      });
+
+      // Update user's picture URL in the database
+      const { prisma } = require('../src/config/prisma');
+      await prisma.user.update({
+        where: { id: req.user.id },
+        data: { picture: result.secure_url }
+      });
+
+      res.json({ url: result.secure_url });
+    } catch (error) {
+      console.error('Upload error:', error);
+      res.status(500).json({ error: 'Failed to upload image' });
+    }
+  });
 });
 
 app.listen(PORT, () => {
