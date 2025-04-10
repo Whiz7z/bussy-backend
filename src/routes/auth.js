@@ -3,6 +3,7 @@ const passport = require('passport');
 
 // Auth middleware to check if user is authenticated
 const isAuthenticated = (req, res, next) => {
+  //console.log(req);
   if (req.isAuthenticated()) {
     return next();
   }

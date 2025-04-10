@@ -38,7 +38,7 @@ router.get('/:id', async (req, res) => {
 
 // Create review
 router.post('/', isAuthenticated, async (req, res) => {
-  console.log({ ...req.body, userId: req.user.id });
+  //console.log({ ...req.body, userId: req.user.id });
   try {
     const { rating, comment, businessId } = req.body;
     const review = await prisma.review.create({

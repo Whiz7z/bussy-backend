@@ -30,7 +30,10 @@ app.set('trust proxy', 1);
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  maxAge: 24 * 60 * 60 * 1000,
+  origin: process.env.CLIENT_URL,
+  secure: false,
+  httpOnly: true,
   credentials: true
 }));
 
@@ -68,7 +71,6 @@ app.use(passport.session());
 const authRoutes = require('../src/routes/auth');
 const businessRoutes = require('../src/routes/business');
 const reviewRoutes = require('../src/routes/review');
-const uploadToCloudStorage = require('../utils/uploadToCloudStorage');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/businesses', businessRoutes);
