@@ -30,10 +30,7 @@ app.set('trust proxy', 1);
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  maxAge: 24 * 60 * 60 * 1000,
-  origin: process.env.CLIENT_URL,
-  secure: false,
-  httpOnly: true,
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true
 }));
 
@@ -47,19 +44,18 @@ const pool = new Pool({
 
 app.use(session({
   store: new PgSession({
-    pool: pool, 
-    tableName: 'Session',
+    pool: pool, // Your PostgreSQL connection pool
+    tableName: 'Session', // Table to store sessions
     createTableIfMissing: true,
   }),
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
+  secret: process.env.SESSION_SECRET, // Secret for signing the session ID cookie
+  resave: false, // Forces session to be saved back to the session store
+  saveUninitialized: false, // Don't save uninitialized sessions
   cookie: {
-    maxAge: 24 * 60 * 60 * 1000,
-    sameSite: 'none', 
-    secure: true,
-    httpOnly: true,
-    
+    maxAge: 24 * 60 * 60 * 1000, // Session expiration time
+    sameSite: 'none', // Adjust based on your needs
+    secure: process.env.NODE_ENV === 'production', // Set to true in production
+    httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
   },
 }));
 
