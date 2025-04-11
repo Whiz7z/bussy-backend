@@ -53,7 +53,7 @@ app.use(session({
   saveUninitialized: false, // Don't save uninitialized sessions
   cookie: {
     maxAge: 24 * 60 * 60 * 1000, // Session expiration time
-    sameSite: 'none', // Adjust based on your needs
+    sameSite: 'same', // Adjust based on your needs
     secure: false, // Set to true in production
   },
 }));
