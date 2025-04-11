@@ -23,7 +23,7 @@ router.get('/google/callback',
   }),
   (req, res) => {
     console.log('req', req);
-    res.redirect('http://localhost:5173');
+    res.redirect(process.env.CLIENT_URL);
   }
 );
 
