@@ -30,6 +30,8 @@ model Business {
   formattedAddress  String?
   phoneNumber       String?
   website           String?
+  imageUrl          String?
+  promotion         String?
   reviews           Review[]
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
