@@ -54,7 +54,7 @@ app.use(session({
   cookie: {
     maxAge: 24 * 60 * 60 * 1000, // Session expiration time
     sameSite: 'none', // Adjust based on your needs
-    secure: process.env.NODE_ENV === 'production', // Set to true in production
+    secure: true, // Set to true in production
     httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
   },
 }));

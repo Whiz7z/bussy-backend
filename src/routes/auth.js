@@ -13,10 +13,6 @@ const isAuthenticated = (req, res, next) => {
 // Google OAuth routes
 router.get('/google',
   passport.authenticate('google', { scope: ['profile', 'email'] }),
-  (req, res) => {
-    console.log('req', req);
-    res.redirect(process.env.CLIENT_URL);
-  }
 );
 
 router.get('/google/callback',
