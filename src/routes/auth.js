@@ -30,8 +30,8 @@ router.get('/google/callback',
       // Set JWT token in HTTP-only cookie
       res.cookie('jwt', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        secure: true,
+        sameSite: 'none',
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
       });
 
@@ -55,8 +55,8 @@ router.get('/logout', (req, res) => {
   // Clear the JWT cookie
   res.clearCookie('jwt', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax'
+    secure: true,
+    sameSite: 'none'
   });
   res.json({ message: 'Logged out successfully' });
 });
