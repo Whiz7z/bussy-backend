@@ -1,14 +1,13 @@
 const router = require('express').Router();
 const passport = require('passport');
+const jwt = require('jsonwebtoken');
+const express = require('express');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+const { isAuthenticated } = require('../middleware/auth');
 
 // Auth middleware to check if user is authenticated
-const isAuthenticated = (req, res, next) => {
-  //console.log('isAuthenticated',req.user);
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).json({ error: 'Not authenticated' });
-};
+// No longer needed as we have the middleware in auth.js
 
 // Google OAuth routes
 router.get('/google',
@@ -16,30 +15,36 @@ router.get('/google',
 );
 
 router.get('/google/callback',
-  passport.authenticate('google', {
-    successRedirect: `${process.env.CLIENT_URL}/`,
-    failureRedirect: `${process.env.CLIENT_URL}/login`,
-  }),
-  (req, res) => {
-    // console.log('req', 'bebra');
-    // res.redirect(process.env.CLIENT_URL);
+  passport.authenticate('google', { failureRedirect: `${process.env.CLIENT_URL}/login` }),
+  async (req, res) => {
+    try {
+      // Generate JWT token
+      const token = jwt.sign(
+        { id: req.user.id, email: req.user.email },
+        process.env.JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+      
+      // Redirect with token in query params
+      res.redirect(`${process.env.CLIENT_URL}/auth-callback?token=${token}`);
+    } catch (error) {
+      console.error('Auth error:', error);
+      res.redirect(`${process.env.CLIENT_URL}/login?error=auth_failed`);
+    }
   }
 );
 
 // Get current user
 router.get('/user', isAuthenticated, (req, res) => {
-  //console.log('req', req.user);
+  // User is already attached to the request by the isAuthenticated middleware
   res.json(req.user);
 });
 
 // Logout route
 router.get('/logout', (req, res) => {
-  req.logout((err) => {
-    if (err) {
-      return res.status(500).json({ error: 'Error logging out' });
-    }
-    res.json({ message: 'Logged out successfully' });
-  });
+  // No server-side logout required for JWT
+  // Client will handle token removal
+  res.json({ message: 'Logged out successfully' });
 });
 
 module.exports = router; 

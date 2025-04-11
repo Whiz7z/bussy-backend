@@ -32,6 +32,8 @@ app.use(cookieParser());
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // Session configuration
@@ -44,18 +46,20 @@ const pool = new Pool({
 
 app.use(session({
   store: new PgSession({
-    pool: pool, // Your PostgreSQL connection pool
-    tableName: 'Session', // Table to store sessions
+    pool: pool,
+    tableName: 'Session',
     createTableIfMissing: true,
   }),
-  secret: process.env.SESSION_SECRET, // Secret for signing the session ID cookie
-  resave: false, // Forces session to be saved back to the session store
-  saveUninitialized: false, // Don't save uninitialized sessions
+  secret: process.env.SESSION_SECRET,
+  resave: true, // Force save, even if nothing changed
+  saveUninitialized: true, // Save new sessions
   cookie: {
-    maxAge: 24 * 60 * 60 * 1000, // Session expiration time
-    sameSite: 'same', // Adjust based on your needs
-    secure: false, // Set to true in production
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    sameSite: 'none',
+    secure: true,
+    httpOnly: true,
   },
+  name: 'bussy.sid', // Custom name for the session cookie
 }));
 
 // Initialize passport
