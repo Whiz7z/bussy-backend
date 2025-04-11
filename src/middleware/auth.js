@@ -5,7 +5,7 @@ const isAuthenticated = (req, res, next) => {
     }
     res.status(401).json({ error: 'Not authenticated' });
   } catch (error) {
-    console.log(error);
+    //console.log(error);
     res.status(500).json({ error: 'Failed to authenticate' });
   }
 };

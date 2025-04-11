@@ -3,7 +3,7 @@ const passport = require('passport');
 
 // Auth middleware to check if user is authenticated
 const isAuthenticated = (req, res, next) => {
-  console.log(req);
+  console.log('isAuthenticated',req.user);
   if (req.isAuthenticated()) {
     return next();
   }
@@ -19,17 +19,16 @@ router.get('/google/callback',
   passport.authenticate('google', {
     successRedirect: `${process.env.CLIENT_URL}/`,
     failureRedirect: `${process.env.CLIENT_URL}/login`,
-    
   }),
   (req, res) => {
-    console.log('req', req);
-    res.redirect(process.env.CLIENT_URL);
+    // console.log('req', 'bebra');
+    // res.redirect(process.env.CLIENT_URL);
   }
 );
 
 // Get current user
 router.get('/user', isAuthenticated, (req, res) => {
-  console.log('req', req);
+  console.log('req', req.user);
   res.json(req.user);
 });
 

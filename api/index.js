@@ -31,7 +31,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials: true
+  credentials: true,
 }));
 
 // Session configuration
@@ -54,8 +54,7 @@ app.use(session({
   cookie: {
     maxAge: 24 * 60 * 60 * 1000, // Session expiration time
     sameSite: 'none', // Adjust based on your needs
-    secure: true, // Set to true in production
-    httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+    secure: false, // Set to true in production
   },
 }));
 
