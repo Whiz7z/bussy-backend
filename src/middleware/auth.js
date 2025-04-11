@@ -3,14 +3,12 @@ const prisma = require('../config/prisma');
 
 const isAuthenticated = async (req, res, next) => {
   try {
-    // Get token from Authorization header
-    const authHeader = req.headers.authorization;
+    // Get token from cookie instead of Authorization header
+    const token = req.cookies.jwt;
     
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!token) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
-    
-    const token = authHeader.split(' ')[1];
     
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);

@@ -24,9 +24,19 @@ router.get('/google/callback',
         process.env.JWT_SECRET,
         { expiresIn: '24h' }
       );
+
+      console.log(token);
       
-      // Redirect with token in query params
-      res.redirect(`${process.env.CLIENT_URL}/auth-callback?token=${token}`);
+      // Set JWT token in HTTP-only cookie
+      res.cookie('jwt', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      });
+
+      // Redirect to client
+      res.redirect(`${process.env.CLIENT_URL}/auth-callback`);
     } catch (error) {
       console.error('Auth error:', error);
       res.redirect(`${process.env.CLIENT_URL}/login?error=auth_failed`);
@@ -42,8 +52,12 @@ router.get('/user', isAuthenticated, (req, res) => {
 
 // Logout route
 router.get('/logout', (req, res) => {
-  // No server-side logout required for JWT
-  // Client will handle token removal
+  // Clear the JWT cookie
+  res.clearCookie('jwt', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  });
   res.json({ message: 'Logged out successfully' });
 });
 
